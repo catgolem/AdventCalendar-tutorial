@@ -1,8 +1,45 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import { useEffect ,useState} from 'react'
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
 import styles from '../styles/Home.module.css'
+import { text } from 'stream/consumers'
 
 export default function Home() {
+
+  const [value, setValue] = useState<String>("");
+  const [value2, setValue2] = useState<String>("");
+  const [number, setNumber] = useState<number | null>(null);
+  
+  const options: AxiosRequestConfig = {
+    url: `/api/?name=cat`,
+    method: "GET",
+  };
+
+  async function getSample(){
+    await axios(options)
+      .then((res: AxiosResponse<String>) =>{
+        const{data,status} = res;
+        setValue(data)
+        setNumber(status)
+      })
+      .catch((e: AxiosError<{error: string}>) =>{
+        console.log(e.message)
+      })
+  };
+
+  async function getSample2(){
+    (async function () {
+      const { text } = await( await fetch(`/api/Hello`)).json();
+      setValue2(text);
+    });
+  };
+
+  useEffect(()=>{
+    getSample();
+    getSample2();
+  })
+
   return (
     <div className={styles.container}>
       <Head>
@@ -14,6 +51,7 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
+          <div>{value}</div>
         </h1>
 
         <p className={styles.description}>
